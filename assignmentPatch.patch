@@ -1,0 +1,30 @@
+diff --git a/README.md b/README.md
+index ae0733d..3f8c907 100644
+--- a/README.md
++++ b/README.md
+@@ -53,6 +53,12 @@ This class is responsible for interacting with Zookeeper to keep the registry of
+     - Output the contents of the registry to the terminal.
+ - `public Map<String, String> getServices() `
+     - Returns the current registry of services in the form of a `Map<String, String>`, where the key is the service name, and the value is the service address.
++- `public void register(String serviceName, String serviceAddress)`
++  - Allows the service to register with the cluster
++  - Creates a znode under the `/services` parent.
++  - The name of the created znode should correspond to the `serviceName`
++  - The znode should contain the `serviceAddress` as its data
++  - Decide for yourself what type of znode it should be (e.g.persistent, ephemeral etc.).
+ 
+ ### `Application.java`
+ This class is partially implemented for you, with some code commented out. It contains a main method which creates a new `ServiceRegistry` instance and calls methods on it to:
+diff --git a/service-registry/src/test/java/ServiceRegistryTest.java b/service-registry/src/test/java/ServiceRegistryTest.java
+index 1d4222a..e2a686c 100644
+--- a/service-registry/src/test/java/ServiceRegistryTest.java
++++ b/service-registry/src/test/java/ServiceRegistryTest.java
+@@ -229,7 +229,7 @@ class ServiceRegistryTest {
+         // Service should have correct addres
+         Thread.sleep(SLEEP_INTERVAL);
+         registeredServices = registry.getServices();
+-        assertEquals(testServiceAddress, registeredServices.get(testServiceName));
++        assertEquals(newTestServiceAddress, registeredServices.get(testServiceName));
+     }
+ 
+     private void helperUpdateZnode(String testServiceName, String newTestServiceAddress) throws InterruptedException, KeeperException {

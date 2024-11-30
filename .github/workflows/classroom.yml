@@ -1,0 +1,174 @@
+name: Autograding Tests
+'on':
+  - push
+  - repository_dispatch
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set Java version
+        uses: actions/setup-java@v1
+        with:
+          java-version: '19'
+
+      - name: Test Connecting
+        id: test-connecting
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Test Connecting
+          setup-command: ''
+          command:  mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#processConnectedTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Test Disconnecting
+        id: test-disconnecting
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Test Disconnecting
+          setup-command: ''
+          command:  mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#processDisconnectedTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Initialise creates services znode
+        id: test-initialise-creates-services-znode
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Initialise creates services znode
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#initialiseCreateServicesZnodeTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Initialise creates services znode with correct mode
+        id: test-initialise-creates-services-znode-correct-mode
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Initialise creates services znode with correct mode
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#initialiseCreateServicesZnodeModeTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Services znode already exists
+        id: test-services-znode-already-exists
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Test Electing Leader Two Nodes
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#initialiseCreateServicesZnodeAlreadyExistsTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Initialise gets existing services
+        id: test-initialise-gets-existing-services
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Initialise gets existing services
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#initialiseServiceRegistryGetsExistingServicesTest test
+          timeout: 2
+          max-score: 5
+
+      - name: New service added to empty cluster
+        id: test-new-service-added-empty-cluster
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: New service added to empty cluster
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#firstNewServiceAddedTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Second new service added
+        id: test-second-new-service-added
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Second new service added
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#secondNewServiceAddedTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Service removed
+        id: test-service-removed
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Service removed
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#serviceRemovedTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Register creates znode
+        id: test-register-creates-znode
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Register creates znode
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#registerServiceCreatesZNodeTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Register creates znode correct data
+        id: test-register-creates-znode-correct-data
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Register creates znode correct data
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#registerServiceCorrectDataTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Register creates znode correct mode
+        id: test-register-creates-znode-correct-mode
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Register creates znode correct mode
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#registerServiceCorrectModeTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Service address changes test
+        id: test-service-address-changes
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Service address changes test
+          setup-command: ''
+          command: mvn -q -Dmaven.test.skip=false -DskipTests=false -Dtest=ServiceRegistryTest#serviceAddressChangedTest test
+          timeout: 2
+          max-score: 5
+
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          TEST-CONNECTING_RESULTS: "${{steps.test-connecting.outputs.result}}"
+          TEST-DISCONNECTING_RESULTS: "${{steps.test-disconnecting.outputs.result}}"
+          TEST-INITIALISE-CREATES-SERVICES-ZNODE_RESULTS: "${{steps.test-initialise-creates-services-znode.outputs.result}}"
+          TEST-INITIALISE-CREATES-SERVICES-ZNODE-CORRECT-MODE_RESULTS: "${{steps.test-initialise-creates-services-znode-correct-mode.outputs.result}}"
+          TEST-SERVICES-ZNODE-ALREADY-EXISTS_RESULTS: "${{steps.test-services-znode-already-exists.outputs.result}}"
+          TEST-INITIALISE-GETS-EXISTING-SERVICES_RESULTS: "${{steps.test-initialise-gets-existing-services.outputs.result}}"
+          TEST-NEW-SERVICE-ADDED-EMPTY-CLUSTER_RESULTS: "${{steps.test-new-service-added-empty-cluster.outputs.result}}"
+          TEST-SECOND-NEW-SERVICE-ADDED_RESULTS: "${{steps.test-second-new-service-added.outputs.result}}"
+          TEST-SERVICE-REMOVED_RESULTS: "${{steps.test-service-removed.outputs.result}}"
+          TEST-REGISTER-CREATES-ZNODE_RESULTS: "${{steps.test-register-creates-znode.outputs.result}}"
+          TEST-REGISTER-CREATES-ZNODE-CORRECT-DATA_RESULTS: "${{steps.test-register-creates-znode-correct-data.outputs.result}}"
+          TEST-REGISTER-CREATES-ZNODE-CORRECT-MODE_RESULTS: "${{steps.test-register-creates-znode-correct-mode.outputs.result}}"
+          TEST-SERVICE-ADDRESS-CHANGES_RESULTS: "${{steps.test-service-address-changes.outputs.result}}"
+
+
+        with:
+          runners: test-connecting,test-disconnecting,test-initialise-creates-services-znode,test-initialise-creates-services-znode-correct-mode,test-services-znode-already-exists,test-initialise-gets-existing-services,test-new-service-added-empty-cluster,test-second-new-service-added,test-service-removed,test-register-creates-znode,test-register-creates-znode-correct-data,test-register-creates-znode-correct-mode,test-service-address-changes
+
